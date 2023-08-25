@@ -5,19 +5,20 @@ using UnityEngine;
 namespace com.UOTG.Elements
 {
     [System.Serializable]
-    public class UIText : UserInterfaceElementBase
+    public class UIButton : UserInterfaceElementBase
     {
-        public UIText() : base()
+        public UIButton() : base()
         {
             
         }
+
 
         // ## IUserInterfaceElement Implementation
         #region IUserInterfaceElement Implementation
 
         public override UserInterfaceElementType GetElementType()
         {
-            return UserInterfaceElementType.TEXT;
+            return UserInterfaceElementType.BUTTON;
         }
 
         #endregion
@@ -25,18 +26,17 @@ namespace com.UOTG.Elements
         [JsonProperty("transform")]
         [field: SerializeField] public UIRectTransformComponent RectTransformComponent { get; set; }
 
-        [JsonProperty("message")]
-        [field: SerializeField] public string Message { get; set; }
+        [JsonProperty("button_text")]
+        [field: SerializeField] public string ButtonText { get; set; }
 
-
-        public static string Serialize(UIText content)
+        public static string Serialize(UIButton content)
         {
             return JsonConvert.SerializeObject(content, ConverterSettings.GenericSettings);
         }
 
-        public static UIText Deserialize(string message)
+        public static UIButton Deserialize(string message)
         {
-            return JsonConvert.DeserializeObject<UIText>(message, ConverterSettings.GenericSettings);
+            return JsonConvert.DeserializeObject<UIButton>(message, ConverterSettings.GenericSettings);
         }
     }
 
