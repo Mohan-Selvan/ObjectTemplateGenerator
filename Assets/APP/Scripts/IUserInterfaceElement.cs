@@ -19,8 +19,6 @@ namespace com.UOTG.Elements
     public interface IUserInterfaceElement
     {
         //public UserInterfaceElementType GetElementType();
-
-        public List<IUserInterfaceElement> GetChildren();
     }
 
     [System.Serializable]
@@ -31,6 +29,9 @@ namespace com.UOTG.Elements
         {
             Children = new List<IUserInterfaceElement>();
         }
+
+        [JsonIgnore]
+        internal int TemplateIdentifier { get; set; }
 
         [JsonProperty("object_name")]
         [field: SerializeField] public string ObjectName { get; set; }
@@ -43,11 +44,6 @@ namespace com.UOTG.Elements
 
         [JsonProperty("children")]
         [field: SerializeField] public List<IUserInterfaceElement> Children { get; set; }
-
-        public List<IUserInterfaceElement> GetChildren()
-        {
-            return new List<IUserInterfaceElement>() { };
-        }
     }
 }
 

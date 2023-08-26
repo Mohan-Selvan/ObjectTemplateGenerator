@@ -60,5 +60,20 @@ namespace com.UOTG.Components
         }
 
         #endregion
+
+        // ## Static helper functions
+        #region Static helper functions
+
+        public static UIRectTransformComponent BuildUIRectTransformComponentFromUI(RectTransform rectTransform)
+        {
+            return new UIRectTransformComponent()
+            {
+                Position = rectTransform.position,
+                Rotation = rectTransform.localEulerAngles,
+                Scale = rectTransform.localScale
+            };
+        }
+
+        #endregion
     }
 }

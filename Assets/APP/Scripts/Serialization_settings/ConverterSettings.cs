@@ -47,6 +47,9 @@ namespace com.UOTG
                     case UserInterfaceElementType.TEXT:
                         return new UIText();
 
+                    case UserInterfaceElementType.BUTTON:
+                        return new UIButton();
+
                     default:
                         throw new NotImplementedException();
                 }

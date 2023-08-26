@@ -10,33 +10,47 @@ namespace com.UOTG.Tests
     public class ConversionTester : MonoBehaviour
     {
         [Header("Reference")]
-        [SerializeField] HierarchyInstantiator hierarchyInstantiator = null;
+        [SerializeField] UITreeStructureExporter treeStuctureExporter = null;
+        [SerializeField] TemplateHandler templateHandler = null;
 
         [Header("Settings")]
-        [SerializeField] string readFilePath = string.Empty;
-        [SerializeField] string exportFilePath = string.Empty;
+        [SerializeField] string readFilePath    = default;
+        [SerializeField] string writeFilePath   = default;
+        [SerializeField] string printFilePath   = default;
 
         [Header("Input")]
-        [SerializeField] KeyCode loadKey = KeyCode.Alpha9;
-        [SerializeField] KeyCode saveKey = KeyCode.Alpha0;
-        [SerializeField] KeyCode instantiateKey = KeyCode.Return;
+        [SerializeField] KeyCode loadTemplateFromHierarchyKey = KeyCode.Alpha8;
+        [SerializeField] KeyCode readFileKey = KeyCode.Alpha9;
+        [SerializeField] KeyCode writeFileKey = KeyCode.Alpha0;
+        [SerializeField] KeyCode createHierarchyKey = KeyCode.Return;
+        [SerializeField] KeyCode printStructureKey = KeyCode.Backspace;
 
         [Header("Testing only")]
-        [SerializeField] UIEmptyRect element = null;
+        UIEmptyRect element = null;
 
         private void Update()
         {
-            if(Input.GetKeyDown(loadKey))
+            if (Input.GetKeyDown(loadTemplateFromHierarchyKey))
+            {
+                Debug.Log("Building element tree");
+                element = templateHandler.BuildElementDataTree();
+                Debug.Log("Element tree built successfully!");
+            }
+            if (Input.GetKeyDown(readFileKey))
             {
                 LoadFromFile(readFilePath);
             }
-            else if (Input.GetKeyDown(saveKey))
+            else if (Input.GetKeyDown(writeFileKey))
             {
-                SaveToFile(exportFilePath);
+                SaveToFile(writeFilePath);
             }            
-            else if (Input.GetKeyDown(instantiateKey))
+            else if (Input.GetKeyDown(createHierarchyKey))
             {
-                hierarchyInstantiator.InstantiateElements(element);
+                templateHandler.InstantiateElements(element);
+            }
+            else if (Input.GetKeyDown(printStructureKey))
+            {
+                treeStuctureExporter.ExportUITreeStructure(printFilePath, element);
             }
         }
 
