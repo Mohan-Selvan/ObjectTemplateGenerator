@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 using UnityEngine;
 
-using com.UOTG.Components;
 
 namespace com.UOTG.Elements
 {
@@ -13,22 +12,6 @@ namespace com.UOTG.Elements
         {
             
         }
-
-        // ## IUserInterfaceElement Implementation
-        #region IUserInterfaceElement Implementation
-
-        public override UserInterfaceElementType GetElementType()
-        {
-            return UserInterfaceElementType.RECT;
-        }
-
-        #endregion
-
-        [JsonProperty("transform")]
-        [field: SerializeField] public UIRectTransformComponent RectTransformComponent { get; set; }
-
-        [JsonProperty("message")]
-        [field: SerializeField] public string Message { get; set; }
 
         public static string Serialize(UIEmptyRect content)
         {

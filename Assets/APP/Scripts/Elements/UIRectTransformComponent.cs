@@ -39,7 +39,7 @@ namespace com.UOTG.Components
         // ## Serialization callbacks
         #region Serialization callbacks
 
-        [OnSerialized]
+        [OnSerializing]
         private void OnSerializedCallback(StreamingContext context)
         {
             Debug.Log("Calling on serialized");
@@ -47,18 +47,6 @@ namespace com.UOTG.Components
             positionList = Position.ToFloatList();
             rotationList = Rotation.ToFloatList();
             scaleList = Scale.ToFloatList();
-
-            //positionList[0] = Position.x;
-            //positionList[1] = Position.y;
-            //positionList[2] = Position.z;
-            //
-            //rotationList[0] = Rotation.x;
-            //rotationList[1] = Rotation.y;
-            //rotationList[2] = Rotation.z;
-            //
-            //scaleList[0] = Scale.x;
-            //scaleList[1] = Scale.y;
-            //scaleList[2] = Scale.z;
         }
 
         [OnDeserialized]

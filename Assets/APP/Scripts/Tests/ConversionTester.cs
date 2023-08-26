@@ -9,6 +9,9 @@ namespace com.UOTG.Tests
 {
     public class ConversionTester : MonoBehaviour
     {
+        [Header("Reference")]
+        [SerializeField] HierarchyInstantiator hierarchyInstantiator = null;
+
         [Header("Settings")]
         [SerializeField] string readFilePath = string.Empty;
         [SerializeField] string exportFilePath = string.Empty;
@@ -16,9 +19,10 @@ namespace com.UOTG.Tests
         [Header("Input")]
         [SerializeField] KeyCode loadKey = KeyCode.Alpha9;
         [SerializeField] KeyCode saveKey = KeyCode.Alpha0;
+        [SerializeField] KeyCode instantiateKey = KeyCode.Return;
 
         [Header("Testing only")]
-        [SerializeField] UIText element = null;
+        [SerializeField] UIEmptyRect element = null;
 
         private void Update()
         {
@@ -29,6 +33,10 @@ namespace com.UOTG.Tests
             else if (Input.GetKeyDown(saveKey))
             {
                 SaveToFile(exportFilePath);
+            }            
+            else if (Input.GetKeyDown(instantiateKey))
+            {
+                hierarchyInstantiator.InstantiateElements(element);
             }
         }
 
@@ -42,20 +50,18 @@ namespace com.UOTG.Tests
                 return;
             }
 
-            try
-            {
+            //try
+            //{
                 string message = await File.ReadAllTextAsync(path);
 
                 Debug.Log($"Loaded message : {message}");
 
-                element = UIText.Deserialize(message);
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"Error reading from file : {e.Message}");
-            }
-
-
+                element = UIEmptyRect.Deserialize(message);
+            //}
+            //catch (System.Exception e)
+            //{
+            //    Debug.LogError($"Error reading from file : {e.Message}");
+            //}
         }
 
         internal async void SaveToFile(string path)
@@ -70,7 +76,7 @@ namespace com.UOTG.Tests
 
             try
             {
-                string message = UIText.Serialize(element);
+                string message = UIEmptyRect.Serialize(element);
                 await File.WriteAllTextAsync(path, message);
 
                 Debug.Log("Write successful!");

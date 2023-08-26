@@ -1,6 +1,6 @@
 
 using System.Collections.Generic;
-
+using com.UOTG.Components;
 using Newtonsoft.Json;
 
 using UnityEngine;
@@ -18,30 +18,36 @@ namespace com.UOTG.Elements
 
     public interface IUserInterfaceElement
     {
-        public UserInterfaceElementType GetElementType();
+        //public UserInterfaceElementType GetElementType();
 
         public List<IUserInterfaceElement> GetChildren();
     }
 
     [System.Serializable]
-    public abstract class UserInterfaceElementBase : IUserInterfaceElement
+    public class UserInterfaceElementBase : IUserInterfaceElement
     {
         [JsonConstructor]
         public UserInterfaceElementBase()
         {
-            //Children = new List<IUserInterfaceElement>();
+            Children = new List<IUserInterfaceElement>();
         }
 
-        //[JsonProperty("children")]
-        //public List<IUserInterfaceElement> Children { get; set; }
+        [JsonProperty("object_name")]
+        [field: SerializeField] public string ObjectName { get; set; }
+
+        [JsonProperty("transform")]
+        [field: SerializeField] public UIRectTransformComponent RectTransformComponent { get; set; }
+
+        [JsonProperty("type")]
+        [field: SerializeField] public virtual UserInterfaceElementType ElementType { get; set; }
+
+        [JsonProperty("children")]
+        [field: SerializeField] public List<IUserInterfaceElement> Children { get; set; }
 
         public List<IUserInterfaceElement> GetChildren()
         {
             return new List<IUserInterfaceElement>() { };
         }
-
-        public abstract UserInterfaceElementType GetElementType();
-
     }
 }
 

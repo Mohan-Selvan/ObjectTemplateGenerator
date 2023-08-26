@@ -13,15 +13,15 @@ namespace com.UOTG.Elements
         }
 
 
-        // ## IUserInterfaceElement Implementation
-        #region IUserInterfaceElement Implementation
+        //// ## IUserInterfaceElement Implementation
+        //#region IUserInterfaceElement Implementation
 
-        public override UserInterfaceElementType GetElementType()
-        {
-            return UserInterfaceElementType.BUTTON;
-        }
+        //public override UserInterfaceElementType GetElementType()
+        //{
+        //    return UserInterfaceElementType.BUTTON;
+        //}
 
-        #endregion
+        //#endregion
 
         [JsonProperty("transform")]
         [field: SerializeField] public UIRectTransformComponent RectTransformComponent { get; set; }
