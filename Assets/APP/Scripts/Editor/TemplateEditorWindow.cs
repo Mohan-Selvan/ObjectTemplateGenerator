@@ -215,7 +215,7 @@ public class TemplateEditorWindow : EditorWindow
             string fileName = System.IO.Path.GetFileName(filePath);
             if(EditorUtility.DisplayDialog(
                 title: "Confirmation", 
-                message: $"File ({fileName}) already exists, Do you want to replace it?",
+                message: $"File already exists, Do you want to replace the following file?\n{fileName}",
                 ok: "Yes",
                 cancel: "Cancel"))
             {
@@ -226,18 +226,18 @@ public class TemplateEditorWindow : EditorWindow
             return;
         }
 
-        Debug.Log($"Building template for game object : {activeGameObject.name}");
-
         string content = null;
 
         try
         {
+
+            Debug.Log($"Building template for game object : {activeGameObject.name}");
             UIEmptyRect elementData = TemplateHandler.BuildElementDataTree(rectTransformComponent);
             content = UIEmptyRect.Serialize(elementData);
 
             templateContent = UITreeStructureExporter.GetUITreeStructureAsString(elementData);
 
-            Debug.Log($"Template built successfully for game object: {activeGameObject.name}");
+            Debug.Log($"Template built successfully");
         }
         catch (System.Exception e)
         {
