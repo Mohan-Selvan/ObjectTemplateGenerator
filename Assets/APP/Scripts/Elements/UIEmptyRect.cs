@@ -1,3 +1,4 @@
+using com.UOTG.Components;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -5,7 +6,7 @@ using UnityEngine;
 namespace com.UOTG.Elements
 {
     [System.Serializable]
-    public class UIEmptyRect : UserInterfaceElementBase
+    public partial class UIEmptyRect : UserInterfaceElementBase
     {
 
         public UIEmptyRect() : base()
@@ -24,5 +25,37 @@ namespace com.UOTG.Elements
         }
     }
 
+    public partial class UIEmptyRect
+    {
+        internal static UIEmptyRect BuildElement(RectTransform rectTransform)
+        {
+            if (rectTransform == null)
+            {
+                Debug.LogError("No rect transform present on button object", rectTransform.gameObject);
+                return null;
+            }
+
+            UIEmptyRect obj = new UIEmptyRect();
+            obj.ElementType = UserInterfaceElementType.RECT;
+            obj.ObjectName = rectTransform.gameObject.name;
+
+            obj.RectTransformComponent = UIRectTransformComponent.BuildUIRectTransformComponentFromUI(rectTransform);
+
+            return obj;
+        }
+
+        internal static RectTransform InstantiateElement(UIEmptyRect emptyRectElement, RectTransform parent)
+        {
+            GameObject go = new GameObject(emptyRectElement.ObjectName);
+
+            RectTransform rectTransform = go.AddComponent<RectTransform>();
+            rectTransform.SetParent(parent);
+
+            UIRectTransformComponent.ApplyDataToRectTransform(emptyRectElement.RectTransformComponent, rectTransform);
+
+            return rectTransform;
+        }
+
+    }
 }
 

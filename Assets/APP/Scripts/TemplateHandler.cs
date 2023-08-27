@@ -9,6 +9,11 @@ namespace com.UOTG
 {
     public class TemplateHandler
     {
+        /// <summary>
+        /// Builds UI data tree with the provided rectTransform as root
+        /// </summary>
+        /// <param name="rectTransform"></param>
+        /// <returns></returns>
         public static UIEmptyRect BuildElementDataTree(RectTransform rectTransform)
         {
             if (rectTransform == null)
@@ -52,100 +57,35 @@ namespace com.UOTG
 
             if (rectTransform.TryGetComponent<Button>(out Button buttonComponent))
             {
-                return BuildUIButton(buttonComponent);
+                return UIButton.BuildElement(buttonComponent);
             }
 
             if(rectTransform.TryGetComponent<TextMeshProUGUI>(out TextMeshProUGUI textComponent))
             {
-                return BuildUIText(textComponent);
+                return UIText.BuildElement(textComponent);
             }
 
-            if(rectTransform != null)
+            if (rectTransform.TryGetComponent<Image>(out Image imageComponent))
             {
-                return BuildUIEmptyRect(rectTransform);
+                return UIImage.BuildElement(imageComponent);
             }
 
-            Debug.LogError("Could not build ui element for the specified object", rectTransform.gameObject);
+            if (rectTransform != null)
+            {
+                return UIEmptyRect.BuildElement(rectTransform);
+            }
+
+            Debug.LogError("Could not build UI element for the specified object", rectTransform.gameObject);
             return null;
         }
 
-        #region Hierarchy To Model
 
-        private static UIEmptyRect BuildUIEmptyRect(RectTransform rectTransform)
-        {
-            if (rectTransform == null)
-            {
-                Debug.LogError("No rect transform present on button object", rectTransform.gameObject);
-                return null;
-            }
-
-            UIEmptyRect obj = new UIEmptyRect();
-            obj.ElementType = UserInterfaceElementType.RECT;
-            obj.ObjectName = rectTransform.gameObject.name;
-
-            obj.RectTransformComponent = UIRectTransformComponent.BuildUIRectTransformComponentFromUI(rectTransform);
-
-
-            return obj;
-        }
-
-        private static UIButton BuildUIButton(Button buttonComponent)
-        {
-            if (buttonComponent == null) { return null; }
-
-            RectTransform rectTransform = buttonComponent.transform as RectTransform;
-            Image imageComponent = buttonComponent.transform.GetComponent<Image>();
-
-            if (rectTransform == null)
-            {
-                Debug.LogError("No rect transform present on button object", buttonComponent.gameObject);
-                return null;
-            }
-
-            if (imageComponent == null)
-            {
-                Debug.LogError("No image component present on button object", buttonComponent.gameObject);
-                return null;
-            }
-
-            UIButton obj = new UIButton();
-
-            obj.ElementType = UserInterfaceElementType.BUTTON;
-            obj.ObjectName = rectTransform.gameObject.name;
-
-            obj.RectTransformComponent = UIRectTransformComponent.BuildUIRectTransformComponentFromUI(rectTransform);
-            obj.ButtonColor = imageComponent.color;
-
-            return obj;
-        }
-
-        private static UIText BuildUIText(TextMeshProUGUI textComponent)
-        {
-            if (textComponent == null) { return null; }
-
-            RectTransform rectTransform = textComponent.transform as RectTransform;
-
-            if (rectTransform == null)
-            {
-                Debug.LogError("No rect transform present on button object", textComponent.gameObject);
-                return null;
-            }
-
-            UIText obj = new UIText();
-
-            obj.ElementType = UserInterfaceElementType.TEXT;
-            obj.ObjectName = rectTransform.gameObject.name;
-
-            obj.RectTransformComponent = UIRectTransformComponent.BuildUIRectTransformComponentFromUI(rectTransform);
-            obj.Message = textComponent.text;
-
-            return obj;
-        }
-
-        #endregion
-
-
-        public static void InstantiateElements(UserInterfaceElementBase rootElement, RectTransform rootTransform)
+        /// <summary>
+        /// Instantiates all UI elements held by the provided rootElement
+        /// </summary>
+        /// <param name="element">UI Elements data</param>
+        /// <param name="rootTransform">Parent object for instantiation</param>
+        public static void InstantiateElements(UserInterfaceElementBase element, RectTransform rootTransform)
         {
             if (rootTransform == null)
             {
@@ -153,15 +93,15 @@ namespace com.UOTG
                 return;
             }
 
-            if (rootElement == null)
+            if (element == null)
             {
-                Debug.LogError($"Root element is null!");
+                Debug.LogError($"Element is null!");
                 return;
             }
 
             try
             {
-                InstantiateElementsRecursively(rootElement, rootTransform);
+                InstantiateElementsRecursively(element, rootTransform);
             }
             catch (System.Exception e)
             {
@@ -188,8 +128,6 @@ namespace com.UOTG
         {
             UserInterfaceElementType elementType = userInterfaceElement.ElementType;
 
-            Debug.Log($"Creating element of type : {elementType}");
-
             switch (elementType)
             {
                 case UserInterfaceElementType.RECT:
@@ -202,7 +140,7 @@ namespace com.UOTG
                         return null;
                     }
 
-                    return CreateElement(uiRect, parent);
+                    return UIEmptyRect.InstantiateElement(uiRect, parent);
 
                 //break;
 
@@ -216,7 +154,7 @@ namespace com.UOTG
                         return null;
                     }
 
-                    return CreateElement(uiText, parent);
+                    return UIText.InstantiateElement(uiText, parent);
 
                 //break;
 
@@ -231,9 +169,21 @@ namespace com.UOTG
                         return null;
                     }
 
-                    return CreateElement(uiButton, parent);
+                    return UIButton.InstantiateElement(uiButton, parent);
 
                 //break;
+
+                case UserInterfaceElementType.IMAGE:
+
+                    UIImage uiImage = userInterfaceElement as UIImage;
+
+                    if (uiImage == null)
+                    {
+                        Debug.LogError($"Error casting element as : {userInterfaceElement.ElementType}");
+                        return null;
+                    }
+
+                    return UIImage.InstantiateElement(uiImage, parent);
 
                 default:
                     Debug.LogError("Invalid element");
@@ -242,59 +192,5 @@ namespace com.UOTG
             }
         }
 
-        #region Model to Hierarchy
-
-        private static RectTransform CreateElement(UIEmptyRect emptyRectElement, RectTransform parent)
-        {
-            GameObject go = new GameObject(emptyRectElement.ObjectName);
-            RectTransform rectTransform = go.AddComponent<RectTransform>();
-
-            rectTransform.localPosition = emptyRectElement.RectTransformComponent.Position;
-            rectTransform.localEulerAngles = emptyRectElement.RectTransformComponent.Rotation;
-            rectTransform.localScale = emptyRectElement.RectTransformComponent.Scale;
-
-            rectTransform.SetParent(parent);
-
-            return rectTransform;
-        }
-
-        private static RectTransform CreateElement(UIText textElement, RectTransform parent)
-        {
-            GameObject go = new GameObject(textElement.ObjectName);
-
-            RectTransform rectTransform = go.AddComponent<RectTransform>();
-            rectTransform.SetParent(parent);
-
-            rectTransform.position = textElement.RectTransformComponent.Position;
-            rectTransform.eulerAngles = textElement.RectTransformComponent.Rotation;
-            rectTransform.localScale = textElement.RectTransformComponent.Scale;
-
-            TextMeshProUGUI textComponent = go.AddComponent<TextMeshProUGUI>();
-            textComponent.text = textElement.Message;
-            textComponent.rectTransform.SetParent(parent, worldPositionStays: false);
-
-            return textComponent.rectTransform;
-        }
-
-        private static RectTransform CreateElement(UIButton buttonElement, RectTransform parent)
-        {
-            GameObject go = new GameObject(buttonElement.ObjectName);
-
-            RectTransform rectTransform = go.AddComponent<RectTransform>();
-            rectTransform.SetParent(parent);
-
-            rectTransform.position = buttonElement.RectTransformComponent.Position;
-            rectTransform.eulerAngles = buttonElement.RectTransformComponent.Rotation;
-            rectTransform.localScale = buttonElement.RectTransformComponent.Scale;
-
-            Image imageComponent = go.AddComponent<Image>();
-            Button buttonComponent = go.AddComponent<Button>();
-
-            imageComponent.color = buttonElement.ButtonColor;
-
-            return rectTransform;
-        }
-
-        #endregion
     }
 }

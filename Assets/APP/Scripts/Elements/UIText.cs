@@ -1,11 +1,12 @@
 using com.UOTG.Components;
 using Newtonsoft.Json;
+using TMPro;
 using UnityEngine;
 
 namespace com.UOTG.Elements
 {
     [System.Serializable]
-    public class UIText : UserInterfaceElementBase
+    public partial class UIText : UserInterfaceElementBase
     {
         public UIText() : base()
         {
@@ -14,6 +15,15 @@ namespace com.UOTG.Elements
 
         [JsonProperty("message")]
         [field: SerializeField] public string Message { get; set; }
+
+        [JsonProperty("font_size")]
+        [field: SerializeField] public float FontSize { get; set; }
+
+        //[JsonProperty("text_color")]
+        //[field: SerializeField] public Color TextColor { get; set; }
+
+        [JsonProperty("align")]
+        [field: SerializeField] public TextAlignmentOptions Alignment { get; set; }
 
 
         public static string Serialize(UIText content)
@@ -25,6 +35,57 @@ namespace com.UOTG.Elements
         {
             return JsonConvert.DeserializeObject<UIText>(message, ConverterSettings.GenericSettings);
         }
+    }
+
+    public partial class UIText
+    {
+        internal static UIText BuildElement(TextMeshProUGUI textComponent)
+        {
+            if (textComponent == null) { return null; }
+
+            RectTransform rectTransform = textComponent.transform as RectTransform;
+
+            if (rectTransform == null)
+            {
+                Debug.LogError("No rect transform present on object", textComponent.gameObject);
+                return null;
+            }
+
+            UIText obj = new UIText();
+
+            obj.ElementType = UserInterfaceElementType.TEXT;
+            obj.ObjectName = rectTransform.gameObject.name;
+
+            obj.RectTransformComponent = UIRectTransformComponent.BuildUIRectTransformComponentFromUI(rectTransform);
+            obj.Message = textComponent.text;
+            obj.FontSize = textComponent.fontSize;
+            obj.Alignment = textComponent.alignment;
+            //obj.TextColor = textComponent.color;
+
+            return obj;
+        }
+
+
+        internal static RectTransform InstantiateElement(UIText textElement, RectTransform parent)
+        {
+            GameObject go = new GameObject(textElement.ObjectName);
+
+            RectTransform rectTransform = go.AddComponent<RectTransform>();
+            rectTransform.SetParent(parent);
+
+            UIRectTransformComponent.ApplyDataToRectTransform(textElement.RectTransformComponent, rectTransform);
+
+            TextMeshProUGUI textComponent = go.AddComponent<TextMeshProUGUI>();
+            textComponent.rectTransform.SetParent(parent, worldPositionStays: false);
+
+            textComponent.text = textElement.Message;
+            textComponent.fontSize = textElement.FontSize;
+            textComponent.alignment = textElement.Alignment;
+            //textComponent.color = textElement.TextColor;
+
+            return textComponent.rectTransform;
+        }
+
     }
 
 }

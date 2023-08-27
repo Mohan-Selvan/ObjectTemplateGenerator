@@ -18,6 +18,19 @@ public static class Utilities
         }
     }
 
+    public static Vector2 ToVector2(this List<float> floatList)
+    {
+        try
+        {
+            return new Vector2(floatList[0], floatList[1]);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Exception occured during conversion : {e.Message}");
+            return Vector2.zero;
+        }
+    }
+
     public static List<float> ToFloatList(this Vector3 vector)
     {
         try
@@ -29,6 +42,20 @@ public static class Utilities
         {
             Debug.LogError($"Exception occured during conversion : {e.Message}");
             return new List<float> { 0f, 0f, 0f };
+        }
+    }
+    
+    public static List<float> ToFloatList(this Vector2 vector)
+    {
+        try
+        {
+            return new List<float>() { vector.x, vector.y };
+
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Exception occured during conversion : {e.Message}");
+            return new List<float> { 0f, 0f };
         }
     }
 }
