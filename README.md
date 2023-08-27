@@ -71,6 +71,8 @@ The base implementation is set in a way such that more UI elements and their pro
 #### Demo scene
 - Open the following scene from the Project window `Assets/APP/Scenes/Main.unity`
 
+![image](https://github.com/Mohan-Selvan/ObjectTemplateGenerator/assets/64124633/91ea0053-1959-43cd-845a-b988bd0eac61)
+
 #### Creating your own test scene
 - Create a new scene
 - Create a new "Canvas" as shown in the image below ![image](https://github.com/Mohan-Selvan/ObjectTemplateGenerator/assets/64124633/f5c017fa-b03c-41a8-b5b5-71c9edcd8d02)
@@ -88,6 +90,7 @@ The base implementation is set in a way such that more UI elements and their pro
   - Fill the "File path" text field with the fully qualified path. For example, "D:/WorkArea/sample_ui_template.json"
   - Click on "Export current template" button to complete the export.
 - Click on "Unload current template" button to remove the loaded template.
+- Select the "Sample UI" game object. Remove or Disable it from the hierarchy so we can instantiate it from the json file again.
 - In order to load a template from the file system.
   - Update the file path text field if required.
   - Click on "Load template from file" button to load the template using the file path provided.
