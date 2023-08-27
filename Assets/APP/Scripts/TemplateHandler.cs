@@ -1,45 +1,26 @@
-using com.UOTG.Components;
-using com.UOTG.Elements;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+using com.UOTG.Components;
+using com.UOTG.Elements;
+
 namespace com.UOTG
 {
-    public class TemplateHandler : MonoBehaviour
+    public class TemplateHandler
     {
-        [Header("Debug only")]
-        [SerializeField] RectTransform rootTransform = null;
-
-        private Dictionary<int, UserInterfaceElementBase> _activeHierarchy = null;
-
-        private void Start()
+        public static UIEmptyRect BuildElementDataTree(RectTransform rectTransform)
         {
-            _activeHierarchy = new Dictionary<int, UserInterfaceElementBase>();
-        }
-
-        internal UIEmptyRect BuildElementDataTree()
-        {
-            if(_activeHierarchy.Count > 0)
-            {
-                Debug.LogError("Replacing existing hierarchy");
-            }
-
-            this.rootTransform = this.transform as RectTransform;
-
-            if (rootTransform == null)
+            if (rectTransform == null)
             {
                 Debug.LogError($"{nameof(TemplateHandler)} should be attached on a RectTransformObject");
                 return null;
             }
 
-            UIEmptyRect emptyRect = BuildDataTreeRecursively(rootTransform) as UIEmptyRect;
-
-            return emptyRect;
+            return BuildDataTreeRecursively(rectTransform) as UIEmptyRect;
         }
 
-        private UserInterfaceElementBase BuildDataTreeRecursively(RectTransform rectTransform)
+        private static UserInterfaceElementBase BuildDataTreeRecursively(RectTransform rectTransform)
         {
             if(rectTransform == null)
             {
@@ -64,7 +45,7 @@ namespace com.UOTG
             return element;
         }
 
-        private UserInterfaceElementBase BuildUIElement(RectTransform rectTransform)
+        private static UserInterfaceElementBase BuildUIElement(RectTransform rectTransform)
         {
             // NOTE :: Instead of checking for component types, a new script can be created
             // with explicit element specifier that can be added attached to the UI object in Hierarchy.
@@ -84,13 +65,13 @@ namespace com.UOTG
                 return BuildUIEmptyRect(rectTransform);
             }
 
-            Debug.LogError("Could not build ui element for the specified object", this.gameObject);
+            Debug.LogError("Could not build ui element for the specified object", rectTransform.gameObject);
             return null;
         }
 
         #region Hierarchy To Model
 
-        private UIEmptyRect BuildUIEmptyRect(RectTransform rectTransform)
+        private static UIEmptyRect BuildUIEmptyRect(RectTransform rectTransform)
         {
             if (rectTransform == null)
             {
@@ -108,7 +89,7 @@ namespace com.UOTG
             return obj;
         }
 
-        private UIButton BuildUIButton(Button buttonComponent)
+        private static UIButton BuildUIButton(Button buttonComponent)
         {
             if (buttonComponent == null) { return null; }
 
@@ -138,7 +119,7 @@ namespace com.UOTG
             return obj;
         }
 
-        private UIText BuildUIText(TextMeshProUGUI textComponent)
+        private static UIText BuildUIText(TextMeshProUGUI textComponent)
         {
             if (textComponent == null) { return null; }
 
@@ -164,8 +145,7 @@ namespace com.UOTG
         #endregion
 
 
-
-        internal void InstantiateElements(UserInterfaceElementBase rootElement)
+        public static void InstantiateElements(UserInterfaceElementBase rootElement, RectTransform rootTransform)
         {
             if (rootTransform == null)
             {
@@ -185,15 +165,15 @@ namespace com.UOTG
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"Exception occured while creating Hierarchy : {e}", this.gameObject);
+                Debug.LogError($"Exception occured while creating Hierarchy : {e}", rootTransform.gameObject);
             }
         }
 
-        private void InstantiateElementsRecursively(UserInterfaceElementBase element, RectTransform parent)
+        private static void InstantiateElementsRecursively(UserInterfaceElementBase element, RectTransform parent)
         {
             if (element == null) { return; }
 
-            RectTransform elementRectTransform = CreateElement(element, parent);
+            RectTransform elementRectTransform = InstantiateElement(element, parent);
 
             if (elementRectTransform != null && element.Children != null && element.Children.Count > 0)
             {
@@ -204,7 +184,7 @@ namespace com.UOTG
             }
         }
 
-        private RectTransform CreateElement(UserInterfaceElementBase userInterfaceElement, RectTransform parent)
+        private static RectTransform InstantiateElement(UserInterfaceElementBase userInterfaceElement, RectTransform parent)
         {
             UserInterfaceElementType elementType = userInterfaceElement.ElementType;
 
@@ -264,7 +244,7 @@ namespace com.UOTG
 
         #region Model to Hierarchy
 
-        private RectTransform CreateElement(UIEmptyRect emptyRectElement, RectTransform parent)
+        private static RectTransform CreateElement(UIEmptyRect emptyRectElement, RectTransform parent)
         {
             GameObject go = new GameObject(emptyRectElement.ObjectName);
             RectTransform rectTransform = go.AddComponent<RectTransform>();
@@ -278,7 +258,7 @@ namespace com.UOTG
             return rectTransform;
         }
 
-        private RectTransform CreateElement(UIText textElement, RectTransform parent)
+        private static RectTransform CreateElement(UIText textElement, RectTransform parent)
         {
             GameObject go = new GameObject(textElement.ObjectName);
 
@@ -296,7 +276,7 @@ namespace com.UOTG
             return textComponent.rectTransform;
         }
 
-        private RectTransform CreateElement(UIButton buttonElement, RectTransform parent)
+        private static RectTransform CreateElement(UIButton buttonElement, RectTransform parent)
         {
             GameObject go = new GameObject(buttonElement.ObjectName);
 

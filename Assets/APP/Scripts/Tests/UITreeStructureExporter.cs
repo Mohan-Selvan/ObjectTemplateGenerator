@@ -9,9 +9,9 @@ using System.IO;
 
 namespace com.UOTG
 {
-    public class UITreeStructureExporter : MonoBehaviour
+    public static class UITreeStructureExporter
     {
-        internal async void ExportUITreeStructure(string filePath, UserInterfaceElementBase element)
+        internal static void ExportUITreeStructure(string filePath, UserInterfaceElementBase element)
         {
             if(string.IsNullOrEmpty(filePath))
             {
@@ -23,7 +23,7 @@ namespace com.UOTG
 
             try
             {
-                await File.WriteAllTextAsync(filePath, content);
+                File.WriteAllText(filePath, content);
                 Debug.Log("Write successful!");
             }
             catch (System.Exception e)
@@ -32,7 +32,7 @@ namespace com.UOTG
             }
         }
 
-        private string GetUITreeStructureAsString(UserInterfaceElementBase element)
+        public static string GetUITreeStructureAsString(UserInterfaceElementBase element)
         {
             if(element == null)
             {
@@ -48,7 +48,7 @@ namespace com.UOTG
             return stringBuilder.ToString();
         }
 
-        private void AppendObjectToString(ref StringBuilder stringBuilder, int level, string literal)
+        private static void AppendObjectToString(ref StringBuilder stringBuilder, int level, UserInterfaceElementBase element)
         {
             //Add spaces
             for (int i = 0; i < level; i++)
@@ -56,14 +56,14 @@ namespace com.UOTG
                 stringBuilder.Append("\t");
             }
 
-            stringBuilder.Append($"-{literal}\n");
+            stringBuilder.Append($"-{element.ObjectName} ({element.ElementType})\n");
         }
 
-        internal void IterateElementRecursively(UserInterfaceElementBase element, ref StringBuilder stringBuilder, int level)
+        internal static void IterateElementRecursively(UserInterfaceElementBase element, ref StringBuilder stringBuilder, int level)
         {
             if(element == null) { return; }
 
-            AppendObjectToString(ref stringBuilder, level, element.ObjectName);
+            AppendObjectToString(ref stringBuilder, level, element);
 
             int childCount = element.Children.Count;
 

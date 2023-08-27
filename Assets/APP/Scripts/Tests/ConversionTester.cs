@@ -9,9 +9,8 @@ namespace com.UOTG.Tests
 {
     public class ConversionTester : MonoBehaviour
     {
-        [Header("Reference")]
-        [SerializeField] UITreeStructureExporter treeStuctureExporter = null;
-        [SerializeField] TemplateHandler templateHandler = null;
+        [Header("Reference")] 
+        [SerializeField] RectTransform rootRectTransform = null;
 
         [Header("Settings")]
         [SerializeField] string readFilePath    = default;
@@ -33,7 +32,7 @@ namespace com.UOTG.Tests
             if (Input.GetKeyDown(loadTemplateFromHierarchyKey))
             {
                 Debug.Log("Building element tree");
-                element = templateHandler.BuildElementDataTree();
+                element = TemplateHandler.BuildElementDataTree(rootRectTransform);
                 Debug.Log("Element tree built successfully!");
             }
             if (Input.GetKeyDown(readFileKey))
@@ -46,11 +45,11 @@ namespace com.UOTG.Tests
             }            
             else if (Input.GetKeyDown(createHierarchyKey))
             {
-                templateHandler.InstantiateElements(element);
+                TemplateHandler.InstantiateElements(element, rootRectTransform);
             }
             else if (Input.GetKeyDown(printStructureKey))
             {
-                treeStuctureExporter.ExportUITreeStructure(printFilePath, element);
+                UITreeStructureExporter.ExportUITreeStructure(printFilePath, element);
             }
         }
 
@@ -64,19 +63,19 @@ namespace com.UOTG.Tests
                 return;
             }
 
-            //try
-            //{
+            try
+            {
                 string message = await File.ReadAllTextAsync(path);
 
                 Debug.Log($"Loaded message : {message}");
 
                 element = UIEmptyRect.Deserialize(message);
-            //}
-            //catch (System.Exception e)
-            //{
-            //    Debug.LogError($"Error reading from file : {e.Message}");
-            //}
-        }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Error reading from file : {e.Message}");
+            }
+}
 
         internal async void SaveToFile(string path)
         {
