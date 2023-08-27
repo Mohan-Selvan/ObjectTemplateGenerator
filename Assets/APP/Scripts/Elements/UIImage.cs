@@ -1,5 +1,7 @@
 using com.UOTG.Components;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,8 +15,32 @@ namespace com.UOTG.Elements
 
         }
 
-        //[JsonProperty("color")]
-        //[field: SerializeField] public Color ImageColor { get; set; }
+
+        [JsonProperty("color")]
+        private List<float> imageColorList { get; set; }
+
+        [JsonIgnore]
+        [field: SerializeField] public Vector4 ImageColor { get; set; }
+
+        // ## Serialization callbacks
+        #region Serialization callbacks
+
+        [OnSerializing]
+        private void OnSerializedCallback(StreamingContext context)
+        {
+            imageColorList = ImageColor.ToFloatList();
+
+        }
+
+        [OnDeserialized]
+        private void OnDeserializedCallback(StreamingContext context)
+        {
+            ImageColor = imageColorList.ToVector4();
+        }
+
+        #endregion
+
+        #region Statich helper functions
 
         public static string Serialize(UIImage content)
         {
@@ -25,6 +51,8 @@ namespace com.UOTG.Elements
         {
             return JsonConvert.DeserializeObject<UIImage>(message, ConverterSettings.GenericSettings);
         }
+
+        #endregion
     }
 
     public partial class UIImage
@@ -47,8 +75,7 @@ namespace com.UOTG.Elements
             obj.ObjectName = rectTransform.gameObject.name;
 
             obj.RectTransformComponent = UIRectTransformComponent.BuildUIRectTransformComponentFromUI(rectTransform);
-
-            //obj.ImageColor = imageComponent.color;
+            obj.ImageColor = imageComponent.color;
 
             return obj;
         }
@@ -64,7 +91,7 @@ namespace com.UOTG.Elements
             UIRectTransformComponent.ApplyDataToRectTransform(imageElement.RectTransformComponent, rectTransform);
 
             Image imageComponent = go.AddComponent<Image>();
-            //imageComponent.color = imageElement.ImageColor;
+            imageComponent.color = imageElement.ImageColor;
 
             return rectTransform;
         }

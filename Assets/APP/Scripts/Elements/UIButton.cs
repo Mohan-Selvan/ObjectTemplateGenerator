@@ -1,5 +1,7 @@
 using com.UOTG.Components;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,11 +15,34 @@ namespace com.UOTG.Elements
             
         }
 
-        //[JsonProperty("color")]
-        //[field: SerializeField] public Color ButtonColor { get; set; }
-
         [JsonProperty("state")]
         [field: SerializeField] public bool InteractableState { get; set; }
+
+        [JsonProperty("color")]
+        private List<float> buttonColorList { get; set; }
+
+        [JsonIgnore]
+        [field: SerializeField] public Vector4 ButtonColor { get; set; }
+
+        // ## Serialization callbacks
+        #region Serialization callbacks
+
+        [OnSerializing]
+        private void OnSerializedCallback(StreamingContext context)
+        {
+            buttonColorList = ButtonColor.ToFloatList();
+
+        }
+
+        [OnDeserialized]
+        private void OnDeserializedCallback(StreamingContext context)
+        {
+            ButtonColor = buttonColorList.ToVector4();
+        }
+
+        #endregion
+
+        #region Static helper functions
 
         public static string Serialize(UIButton content)
         {
@@ -28,6 +53,8 @@ namespace com.UOTG.Elements
         {
             return JsonConvert.DeserializeObject<UIButton>(message, ConverterSettings.GenericSettings);
         }
+
+        #endregion
     }
 
     public partial class UIButton
@@ -58,7 +85,7 @@ namespace com.UOTG.Elements
 
             obj.RectTransformComponent = UIRectTransformComponent.BuildUIRectTransformComponentFromUI(rectTransform);
 
-            //obj.ButtonColor = imageComponent.color;
+            obj.ButtonColor = imageComponent.color;
             obj.InteractableState = buttonComponent.interactable;
 
             return obj;
@@ -77,7 +104,7 @@ namespace com.UOTG.Elements
             Image imageComponent = go.AddComponent<Image>();
             Button buttonComponent = go.AddComponent<Button>();
 
-            //imageComponent.color = buttonElement.ButtonColor;
+            imageComponent.color = buttonElement.ButtonColor;
             buttonComponent.interactable = buttonElement.InteractableState;
 
             return rectTransform;
